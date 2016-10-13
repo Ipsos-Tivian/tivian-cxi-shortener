@@ -85,6 +85,11 @@ the upper and lower case charset, by including the following:
 
   Shortener.charset = :alphanumcase
 
+By default, the shortener counter will be incremented even if a bot/crawler access the shortened URL. You can disable this
+behavior with:
+
+  Shortener.exclude_bots = true
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:

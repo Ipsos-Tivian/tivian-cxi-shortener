@@ -244,6 +244,16 @@ describe Shortener::ShortenedUrl, type: :model do
           expect(result[:url]).to eq url
           expect(result[:shortened_url]).to eq short_url
         end
+        it 'increments use count' do
+          expect_any_instance_of(Shortener::ShortenedUrl).to receive(:increment_usage_count)
+          Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+        end
+        context 'with track set to false' do
+          it 'does not increment use count' do
+            expect_any_instance_of(Shortener::ShortenedUrl).not_to receive(:increment_usage_count)
+            Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key, track: false)
+          end
+        end
       end
 
       context 'expired short url' do

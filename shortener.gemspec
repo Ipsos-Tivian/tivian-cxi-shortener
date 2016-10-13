@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "shortener"
   s.required_rubygems_version = "> 1.3.6"
 
+  s.add_dependency 'browser', '~> 2.2.0'
+
   if RUBY_VERSION >= '2.2.2'
     s.add_dependency 'rails'
   else
