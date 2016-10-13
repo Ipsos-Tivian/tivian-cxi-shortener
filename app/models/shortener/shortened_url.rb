@@ -5,7 +5,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   validates :url, presence: true
 
   # allows the shortened link to be associated with a user
-  belongs_to :owner, polymorphic: true
+  belongs_to :owner, polymorphic: true, required: false
 
   # exclude records in which expiration time is set and expiration time is greater than current time
   scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
