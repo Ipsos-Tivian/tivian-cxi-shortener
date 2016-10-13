@@ -29,6 +29,10 @@ module Shortener
   mattr_accessor :forbidden_keys
   self.forbidden_keys = []
 
+  # Should count bots accessing links
+  mattr_accessor :exclude_bots
+  self.exclude_bots = false
+
   def self.key_chars
     CHARSETS[charset]
   end

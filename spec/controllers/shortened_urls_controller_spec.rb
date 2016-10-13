@@ -18,6 +18,33 @@ describe Shortener::ShortenedUrlsController, type: :controller do
         it 'redirects to the destination url' do
           expect(response).to redirect_to destination
         end
+
+        context 'when request is not from an human' do
+          before do
+            request.user_agent = '360Spider'
+          end
+
+          context 'when configuration is set to not track bots' do
+            before do
+              Shortener.exclude_bots = true
+            end
+
+            it 'calls fetch with token with track argument as false' do
+              expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
+
+              get :show, { id: key }.merge(params)
+            end
+          end
+
+          context 'when configuration is set to track bots' do
+
+            it 'calls fetch with token with track argument as false' do
+              expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
+
+              get :show, { id: key }.merge(params)
+            end
+          end
+        end
       end
 
       context 'real key with trailing characters' do
