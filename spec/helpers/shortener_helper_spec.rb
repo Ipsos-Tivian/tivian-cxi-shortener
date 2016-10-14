@@ -11,7 +11,7 @@ describe Shortener::ShortenerHelper, type: :helper do
       end
 
       context 'short url was generated' do
-        let(:shortened_url) { instance_double('ShortenedUrl', unique_key: '12345') }
+        let(:shortened_url) { double('ShortenedUrl', unique_key: '12345') }
 
         it "shortens the url" do
           expect(helper.short_url(destination)).to eq "http://test.host/12345"
