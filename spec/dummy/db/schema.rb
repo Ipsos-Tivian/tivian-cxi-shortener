@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -13,22 +12,22 @@
 
 ActiveRecord::Schema.define(version: 20150919033108) do
 
-  create_table "shortened_urls", force: true do |t|
+  create_table "shortened_urls", force: :cascade do |t|
     t.integer  "owner_id"
     t.string   "owner_type", limit: 20
     t.text     "url",                               null: false
     t.string   "unique_key", limit: 10,             null: false
     t.integer  "use_count",             default: 0, null: false
     t.datetime "expires_at"
+    t.string   "meta"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type"
+    t.index ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true
+    t.index ["url"], name: "index_shortened_urls_on_url"
   end
 
-  add_index "shortened_urls", ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type"
-  add_index "shortened_urls", ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true
-  add_index "shortened_urls", ["url"], name: "index_shortened_urls_on_url"
-
-  create_table "users", force: true do |t|
+  create_table "users", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end

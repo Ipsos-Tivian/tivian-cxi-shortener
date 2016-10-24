@@ -17,6 +17,9 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
       # valid until date for expirable urls
       t.datetime :expires_at
 
+      # add some tags for that url
+      # t.hstore :meta
+
       t.timestamps
     end
 

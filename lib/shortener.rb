@@ -33,6 +33,10 @@ module Shortener
   mattr_accessor :exclude_bots
   self.exclude_bots = false
 
+  # Enable meta field
+  mattr_accessor :enable_meta
+  self.enable_meta = false
+
   def self.key_chars
     CHARSETS[charset]
   end

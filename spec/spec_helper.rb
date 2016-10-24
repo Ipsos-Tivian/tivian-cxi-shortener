@@ -7,6 +7,8 @@ require 'rspec/rails'
 require 'shoulda/matchers'
 require 'byebug'
 require 'faker'
+# override meta because of postgres :hstore compatibility with sqlite3
+require 'dummy/app/models/shortened_url'
 
 Rails.backtrace_cleaner.remove_silencers!
 
