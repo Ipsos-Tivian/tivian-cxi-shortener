@@ -1,4 +1,5 @@
 module Shortener::ShortenerHelper
+  DEFAULT_HTTP_PORT = 80.freeze
 
   # generate a url from a url string
   def short_url(url, owner: nil, custom_key: nil, expires_at: nil,
@@ -11,8 +12,17 @@ module Shortener::ShortenerHelper
                                                  meta:       meta)
 
     if short_url
-      options = { controller: :"shortener/shortened_urls", action: :show, id: short_url.unique_key, only_path: false }.merge(url_options)
-      url_for(options)
+      options = {
+        controller: 'shortener/shortened_urls',
+        action:     :show,
+        id:         short_url.unique_key,
+        only_path:  false,
+        host:       request.host,
+        protocol:   request.protocol
+      }
+      options.merge!({ port: request.port }) unless request.port == DEFAULT_HTTP_PORT
+
+      Rails.application.routes.url_for(options.merge(url_options))
     else
       url
     end
