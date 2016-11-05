@@ -64,7 +64,13 @@ describe Shortener::ShortenerHelper, type: :helper do
       end
 
       context 'with rack type' do
-        let(:request) { ActionController::TestRequest.create }
+        let(:request) do
+          if ::Rails.version.start_with?('5')
+            ::ActionController::TestRequest.create
+          else
+            ::ActionController::TestRequest.new
+          end
+        end
 
         it { expect(helper.short_url(destination, req: request)).to match("#{request.protocol}#{request.host}/") }
       end
