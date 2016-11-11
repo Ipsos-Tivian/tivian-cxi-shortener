@@ -156,6 +156,14 @@ to create a fresh record, you can pass the following argument:
   Shortener::ShortenedUrl.generate("example.com/page", fresh: true)
   short_url("http://example.com", fresh: true)
 
+=== Shortening URLS out of controller/views (still need a request)
+
+A request must be given to the shortened method in order to retrieve the host/protocol/port
+
+  include Shortener::ShortenerHelper
+
+  short_url('http://example.com', req: request)
+
 === Forbidden keys
 
 You can ensure that records with forbidden keys will not be generated.
