@@ -32,7 +32,9 @@ Gem::Specification.new do |s|
   if RUBY_VERSION >= '2.2.2'
     s.add_development_dependency 'rspec-rails'
   else
-    s.add_development_dependency 'rspec-rails', '~> 2.0'
+    # Changed to 2.4 to avoid run_hook issues
+    # https://github.com/laserlemon/vestal_versions/pull/83
+    s.add_development_dependency 'rspec-rails', '~> 2.4'
   end
 
   s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact

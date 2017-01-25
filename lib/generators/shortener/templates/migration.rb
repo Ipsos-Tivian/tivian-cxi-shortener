@@ -20,6 +20,15 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
       # add some tags for that url
       # t.hstore :meta
 
+      # a column to help linking shortened url with a message
+      t.string :message_id
+
+      # reference for origin where url will be accessed
+      t.string :source, limit: 50
+
+      # internal user that will access this url
+      t.string :campaign_user_id
+
       t.timestamps
     end
 
@@ -28,5 +37,8 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
     add_index :shortened_urls, :unique_key, unique: true
     add_index :shortened_urls, :url
     add_index :shortened_urls, [:owner_id, :owner_type]
+    add_index :shortened_urls, :message_id
+    add_index :shortened_urls, :source
+    add_index :shortened_urls, :campaign_user_id
   end
 end

@@ -11,15 +11,28 @@ describe Shortener::ShortenedUrl, type: :model do
     context 'shortened url record for requested url does not exist' do
       let(:expected_url) { Faker::Internet.url }
       let(:meta) { nil }
+      let(:message_id) { nil }
+      let(:source) { nil }
+      let(:campaign_user_id) { nil }
 
       shared_examples_for "shortened url" do
-        let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner: owner, meta: meta) }
+        let(:short_url) do
+          Shortener::ShortenedUrl.generate!(long_url,
+                                            owner: owner,
+                                            meta: meta,
+                                            message_id: message_id,
+                                            source: source,
+                                            campaign_user_id: campaign_user_id)
+        end
         it 'creates a shortened url record for the url' do
           expect{short_url}.to change{Shortener::ShortenedUrl.count}.by(1)
           expect(short_url.url).to eq expected_url
           expect(short_url.unique_key.length).to eq 5
           expect(short_url.owner).to eq owner
           expect(short_url.meta).to eq meta
+          expect(short_url.message_id).to eq message_id
+          expect(short_url.source).to eq source
+          expect(short_url.campaign_user_id).to eq campaign_user_id
         end
       end
 
@@ -69,6 +82,50 @@ describe Shortener::ShortenedUrl, type: :model do
         context 'when already existing url' do
           subject! { Shortener::ShortenedUrl.generate!(long_url, owner: owner, meta: meta) }
           let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner: owner, meta: meta) }
+
+          it 'retrieve the already existing url without creating a new one' do
+            expect{short_url}.to_not change{Shortener::ShortenedUrl.count}
+            expect(short_url.id).to eq(subject.id)
+          end
+        end
+
+        context 'when new url' do
+          it_should_behave_like 'shortened url'
+        end
+      end
+
+      context 'shortened url with message_id, source and campaign_user_id' do
+        let(:owner) { nil }
+        let(:message_id) { SecureRandom.uuid }
+        let(:source) { 'newsletter' }
+        let(:campaign_user_id) { SecureRandom.uuid }
+        let(:meta) { { 'service_type' => Faker::App.name, 'service_uuid' => SecureRandom.uuid } }
+        let(:long_url) { expected_url }
+
+        before(:each) do
+          Shortener.enable_meta = true
+        end
+        after(:each) do
+          Shortener.enable_meta = false
+        end
+
+        context 'when already existing url' do
+          subject! do
+            Shortener::ShortenedUrl.generate!(long_url,
+                                              owner: owner,
+                                              meta: meta,
+                                              message_id: message_id,
+                                              source: source,
+                                              campaign_user_id: campaign_user_id)
+          end
+          let(:short_url) do
+            Shortener::ShortenedUrl.generate!(long_url,
+                                              owner: owner,
+                                              meta: meta,
+                                              message_id: message_id,
+                                              source: source,
+                                              campaign_user_id: campaign_user_id)
+          end
 
           it 'retrieve the already existing url without creating a new one' do
             expect{short_url}.to_not change{Shortener::ShortenedUrl.count}

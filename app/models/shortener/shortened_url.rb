@@ -26,7 +26,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # link to a user if one specified
   # throw an exception if anything goes wrong
   def self.generate!(destination_url, owner: nil, custom_key: nil,
-                     expires_at: nil, fresh: false, meta: nil)
+                     expires_at: nil, fresh: false, meta: nil,
+                     message_id: nil, source: nil, campaign_user_id: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     result = if destination_url.is_a? Shortener::ShortenedUrl
@@ -38,7 +39,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
                            custom_key: custom_key,
                            expires_at: expires_at,
                            fresh:      fresh,
-                           meta:       meta)
+                           meta:       meta,
+                           message_id: message_id,
+                           source:     source,
+                           campaign_user_id: campaign_user_id)
                end
              else
                creation_method = fresh ? 'create' : 'first_or_create'
@@ -46,7 +50,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
                fields = {
                  unique_key: custom_key,
                  custom_key: custom_key,
-                 expires_at: expires_at
+                 expires_at: expires_at,
+                 message_id: message_id,
+                 source:     source,
+                 campaign_user_id: campaign_user_id
                }
                fields.merge!({ meta: meta }) if Shortener.enable_meta
 
@@ -60,10 +67,13 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   # return shortened url on success, nil on failure
   def self.generate(destination_url, owner: nil, custom_key: nil,
-                    expires_at: nil, fresh: false, meta: nil)
+                    expires_at: nil, fresh: false, meta: nil,
+                    message_id: nil, source: nil, campaign_user_id: nil)
     begin
       generate!(destination_url, owner: owner, custom_key: custom_key,
-                expires_at: expires_at, fresh: fresh, meta: meta)
+                expires_at: expires_at, fresh: fresh, meta: meta,
+                message_id: message_id, source: source,
+                campaign_user_id: campaign_user_id)
     rescue => e
       logger.info e
       nil
