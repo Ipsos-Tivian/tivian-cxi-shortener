@@ -27,7 +27,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # throw an exception if anything goes wrong
   def self.generate!(destination_url, owner: nil, custom_key: nil,
                      expires_at: nil, fresh: false, meta: nil,
-                     message_id: nil, source: nil, campaign_user_id: nil)
+                     related_id: nil, source_type: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     result = if destination_url.is_a? Shortener::ShortenedUrl
@@ -35,30 +35,31 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
                  destination_url
                else
                  generate!(destination_url.url,
-                           owner:      owner,
-                           custom_key: custom_key,
-                           expires_at: expires_at,
-                           fresh:      fresh,
-                           meta:       meta,
-                           message_id: message_id,
-                           source:     source,
-                           campaign_user_id: campaign_user_id)
+                           owner:       owner,
+                           custom_key:  custom_key,
+                           expires_at:  expires_at,
+                           fresh:       fresh,
+                           meta:        meta,
+                           related_id:  related_id,
+                           source_type: source_type)
                end
              else
                creation_method = fresh ? 'create' : 'first_or_create'
 
                fields = {
-                 unique_key: custom_key,
-                 custom_key: custom_key,
-                 expires_at: expires_at,
-                 message_id: message_id,
-                 source:     source,
-                 campaign_user_id: campaign_user_id
+                 unique_key:  custom_key,
+                 custom_key:  custom_key,
+                 expires_at:  expires_at,
+                 related_id:  related_id,
+                 source_type: source_type
                }
                fields.merge!({ meta: meta }) if Shortener.enable_meta
 
-               scopes = apply_scopes(owner, destination_url, meta: meta)
-
+               scopes = apply_scopes(owner,
+                                     destination_url,
+                                     meta: meta,
+                                     related_id: related_id,
+                                     source_type: source_type)
                scopes.send(creation_method, fields)
              end
 
@@ -68,12 +69,11 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # return shortened url on success, nil on failure
   def self.generate(destination_url, owner: nil, custom_key: nil,
                     expires_at: nil, fresh: false, meta: nil,
-                    message_id: nil, source: nil, campaign_user_id: nil)
+                    related_id: nil, source_type: nil)
     begin
       generate!(destination_url, owner: owner, custom_key: custom_key,
                 expires_at: expires_at, fresh: fresh, meta: meta,
-                message_id: message_id, source: source,
-                campaign_user_id: campaign_user_id)
+                related_id: related_id, source_type: source_type)
     rescue => e
       logger.info e
       nil
@@ -126,7 +126,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   private
 
-  def self.apply_scopes(owner, destination_url, meta: nil)
+  def self.apply_scopes(owner,
+                        destination_url,
+                        meta: nil, related_id: nil, source_type: nil)
+
     scope = owner ? owner.shortened_urls : self
 
     scopes = scope.where(url: clean_url(destination_url))
@@ -135,6 +138,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       meta.each do |key, value|
         scopes = scopes.where('meta @> hstore(:key, :value)', key: key, value: value.to_s)
       end
+    end
+
+    unless related_id.blank? && source_type.blank?
+      scopes = scopes.where(related_id: related_id, source_type: source_type)
     end
 
     scopes

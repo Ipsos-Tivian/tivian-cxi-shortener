@@ -12,29 +12,32 @@
 
 ActiveRecord::Schema.define(version: 20170125013508) do
 
-  create_table "shortened_urls", force: :cascade do |t|
-    t.integer  "owner_id"
-    t.string   "owner_type",       limit: 20
-    t.text     "url",                                     null: false
-    t.string   "unique_key",       limit: 10,             null: false
-    t.integer  "use_count",                   default: 0, null: false
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+  enable_extension "hstore"
+  enable_extension "uuid-ossp"
+
+  create_table "shortened_urls", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
+    t.uuid     "owner_id"
+    t.string   "owner_type",  limit: 20
+    t.text     "url",                                null: false
+    t.string   "unique_key",  limit: 10,             null: false
+    t.integer  "use_count",              default: 0, null: false
     t.datetime "expires_at"
-    t.string   "meta"
-    t.string   "message_id"
-    t.string   "source",           limit: 50
-    t.string   "campaign_user_id"
+    t.hstore   "meta"
+    t.uuid     "related_id"
+    t.string   "source_type", limit: 50
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "shortened_urls", ["campaign_user_id"], name: "index_shortened_urls_on_campaign_user_id"
-  add_index "shortened_urls", ["message_id"], name: "index_shortened_urls_on_message_id"
-  add_index "shortened_urls", ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type"
-  add_index "shortened_urls", ["source"], name: "index_shortened_urls_on_source"
-  add_index "shortened_urls", ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true
-  add_index "shortened_urls", ["url"], name: "index_shortened_urls_on_url"
+  add_index "shortened_urls", ["meta"], name: "index_shortened_urls_on_meta", using: :gist
+  add_index "shortened_urls", ["owner_id", "owner_type"], name: "index_shortened_urls_on_owner_id_and_owner_type", using: :btree
+  add_index "shortened_urls", ["related_id", "source_type"], name: "index_shortened_urls_on_related_id_and_source_type", using: :btree
+  add_index "shortened_urls", ["unique_key"], name: "index_shortened_urls_on_unique_key", unique: true, using: :btree
+  add_index "shortened_urls", ["url"], name: "index_shortened_urls_on_url", using: :btree
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :uuid, default: "uuid_generate_v4()", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -208,22 +208,24 @@ Bonus: add an index if you plan on querying this +:meta+ column
 
 
 === Shorten URLs with message_id, source and campaign_user_id parameters
-v1.0.3 introduced more columns to a shortened URL. The message_id, source and campaign_user_id values
-are stored in a string/uuid column in the database, which can be added to your schema with the following
+Additional columns were added to a shortened URL:
+
++related_id+: includes object's id linking (an object with a url)
+
++source_type+: includes a tag to distinguish or categorize the url
+
+These values are stored in two columns in the database, which can be added to your schema with the following
 migration:
-
-Add the fields in the migration. Columns +message_id+ and +campaign_user_id+ need to be a +:uuid+ type
-
-Data type +:uuid+ is not supported natively for sqlite
 
   bundle exec rails g migration add_additional_columns_to_shortened_url
 
 
   class AddAdditionalColumnsToShortenedUrl < ActiveRecord::Migration
     def change
-      add_column :shortened_urls, :message_id, :uuid, index: true
-      add_column :shortened_urls, :source, :string, limit: 50
-      add_column :shortened_urls, :campaign_user_id, :uuid, index: true
+      add_column :shortened_urls, :related_id, :uuid
+      add_column :shortened_urls, :source_type, :string, limit: 50
+
+      add_index :shortened_urls, [:related_id, :source_type]
     end
   end
 

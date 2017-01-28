@@ -14,9 +14,8 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: nil,
                 fresh: false,
                 meta: nil,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: nil)
+                related_id: nil,
+                source_type: nil)
            .and_return(shortened_url)
       end
 
@@ -47,9 +46,8 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: nil,
                 fresh: false,
                 meta: nil,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: nil)
+                related_id: nil,
+                source_type: nil)
         helper.short_url(destination, owner: owner)
       end
     end
@@ -63,9 +61,8 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: nil,
                 fresh: false,
                 meta: nil,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: nil)
+                related_id: nil,
+                source_type: nil)
         helper.short_url(destination, custom_key: 'custkey')
       end
     end
@@ -79,9 +76,8 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: 'testtime',
                 fresh: false,
                 meta: nil,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: nil)
+                related_id: nil,
+                source_type: nil)
         helper.short_url(destination, expires_at: 'testtime')
       end
     end
@@ -102,14 +98,13 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: nil,
                 fresh: false,
                 meta: meta,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: nil)
+                related_id: nil,
+                source_type: nil)
         helper.short_url(destination, meta: meta)
       end
     end
 
-    context 'with message_id' do
+    context 'with related_id' do
       let(:uuid) { SecureRandom.uuid }
       it 'sends custom key code to generate function' do
         expect(Shortener::ShortenedUrl).to receive(:generate)
@@ -119,14 +114,13 @@ describe Shortener::ShortenerHelper, type: :helper do
                 expires_at: nil,
                 fresh: false,
                 meta: nil,
-                message_id: uuid,
-                source: nil,
-                campaign_user_id: nil)
-        helper.short_url(destination, message_id: uuid)
+                related_id: uuid,
+                source_type: nil)
+        helper.short_url(destination, related_id: uuid)
       end
     end
 
-    context 'with source' do
+    context 'with source_type' do
       it 'sends custom key code to generate function' do
         expect(Shortener::ShortenedUrl).to receive(:generate)
          .with(destination,
@@ -135,27 +129,9 @@ describe Shortener::ShortenerHelper, type: :helper do
                expires_at: nil,
                fresh: false,
                meta: nil,
-               message_id: nil,
-               source: 'newsletter',
-               campaign_user_id: nil)
-        helper.short_url(destination, source: 'newsletter')
-      end
-    end
-
-    context 'with campaign_user_id' do
-      let(:uuid) { SecureRandom.uuid }
-      it 'sends custom key code to generate function' do
-        expect(Shortener::ShortenedUrl).to receive(:generate)
-          .with(destination,
-                owner: nil,
-                custom_key: nil,
-                expires_at: nil,
-                fresh: false,
-                meta: nil,
-                message_id: nil,
-                source: nil,
-                campaign_user_id: uuid)
-        helper.short_url(destination, campaign_user_id: uuid)
+               related_id: nil,
+               source_type: 'newsletter')
+        helper.short_url(destination, source_type: 'newsletter')
       end
     end
 
