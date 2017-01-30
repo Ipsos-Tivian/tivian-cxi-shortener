@@ -6,13 +6,13 @@ module Shortener::ShortenerHelper
                 expires_at: nil, fresh: false, meta: nil, url_options: {},
                 related_id: nil, source_type: nil)
     short_url = Shortener::ShortenedUrl.generate(url,
-                                                 owner:      owner,
-                                                 custom_key: custom_key,
-                                                 expires_at: expires_at,
-                                                 fresh:      fresh,
-                                                 meta:       meta,
-                                                 related_id: related_id,
-                                                 source_type:     source_type)
+                                                 owner:       owner,
+                                                 custom_key:  custom_key,
+                                                 expires_at:  expires_at,
+                                                 fresh:       fresh,
+                                                 meta:        meta,
+                                                 related_id:  related_id,
+                                                 source_type: source_type)
 
     if short_url
       options = {
