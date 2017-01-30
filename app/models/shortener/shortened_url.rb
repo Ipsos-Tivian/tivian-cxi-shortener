@@ -46,13 +46,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
              else
                creation_method = fresh ? 'create' : 'first_or_create'
 
-               fields = {
-                 unique_key:  custom_key,
-                 custom_key:  custom_key,
-                 expires_at:  expires_at,
-                 related_id:  related_id,
-                 source_type: source_type
-               }
+               fields = assign_fields(custom_key, expires_at, related_id, source_type)
                fields.merge!({ meta: meta }) if Shortener.enable_meta
 
                scopes = apply_scopes(owner,
@@ -64,6 +58,16 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
              end
 
     result
+  end
+
+  def self.assign_fields(custom_key, expires_at, related_id, source_type)
+    {
+      unique_key:  custom_key,
+      custom_key:  custom_key,
+      expires_at:  expires_at,
+      related_id:  related_id,
+      source_type: source_type
+    }
   end
 
   # return shortened url on success, nil on failure
