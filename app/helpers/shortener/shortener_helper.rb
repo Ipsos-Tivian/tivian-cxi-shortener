@@ -3,13 +3,16 @@ module Shortener::ShortenerHelper
 
   # generate a url from a url string
   def short_url(url, req: request, owner: nil, custom_key: nil,
-                expires_at: nil, fresh: false, meta: nil, url_options: {})
+                expires_at: nil, fresh: false, meta: nil, url_options: {},
+                related_id: nil, source_type: nil)
     short_url = Shortener::ShortenedUrl.generate(url,
-                                                 owner:      owner,
-                                                 custom_key: custom_key,
-                                                 expires_at: expires_at,
-                                                 fresh:      fresh,
-                                                 meta:       meta)
+                                                 owner:       owner,
+                                                 custom_key:  custom_key,
+                                                 expires_at:  expires_at,
+                                                 fresh:       fresh,
+                                                 meta:        meta,
+                                                 related_id:  related_id,
+                                                 source_type: source_type)
 
     if short_url
       options = {

@@ -16,24 +16,13 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = "> 1.3.6"
 
   s.add_dependency 'browser', '~> 2.2.0'
+  s.add_dependency 'rails'
 
-  if RUBY_VERSION >= '2.2.2'
-    s.add_dependency 'rails'
-  else
-    s.add_dependency 'rails', '< 5'
-    s.add_dependency 'activesupport', '< 5'
-  end
-
-  s.add_development_dependency "sqlite3"
-  s.add_development_dependency "shoulda-matchers", '~> 3'
-  s.add_development_dependency "faker"
-  s.add_development_dependency "byebug"
-
-  if RUBY_VERSION >= '2.2.2'
-    s.add_development_dependency 'rspec-rails'
-  else
-    s.add_development_dependency 'rspec-rails', '~> 2.0'
-  end
+  s.add_development_dependency 'shoulda-matchers', '~> 3'
+  s.add_development_dependency 'faker'
+  s.add_development_dependency 'byebug'
+  s.add_development_dependency 'pg', '~> 0.18'
+  s.add_development_dependency 'rspec-rails'
 
   s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
   s.require_path = 'lib'

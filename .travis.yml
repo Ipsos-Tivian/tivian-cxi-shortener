@@ -2,10 +2,11 @@ language: ruby
 cache: bundler
 sudo: false
 rvm:
-  - 2.0.0
-  - 2.1.0
   - 2.2.3
   - 2.3.1
+
+services:
+  - postgresql
 
 before_install:
   - gem install bundler
@@ -14,4 +15,5 @@ before_script:
   - bundle update
 
 script:
-  - bundle exec rake spec
+  - cd spec/dummy && bundle exec rake db:drop db:create db:migrate
+  - cd ../.. && bundle exec rake spec

@@ -1,8 +1,10 @@
 class CreateShortenedUrlsTable < ActiveRecord::Migration
   def change
-    create_table :shortened_urls do |t|
+    enable_extension 'hstore'
+    enable_extension 'uuid-ossp'
+    create_table :shortened_urls, id: :uuid do |t|
       # we can link this to a user for interesting things
-      t.integer :owner_id
+      t.uuid :owner_id
       t.string :owner_type, limit: 20
 
       # the real url that we will redirect to
@@ -20,6 +22,12 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
       # add some tags for that url
       # t.hstore :meta
 
+      # a column to help linking shortened url with a message
+      t.uuid :related_id
+
+      # reference for origin where url will be accessed
+      t.string :source_type, limit: 50
+
       t.timestamps
     end
 
@@ -28,5 +36,7 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
     add_index :shortened_urls, :unique_key, unique: true
     add_index :shortened_urls, :url
     add_index :shortened_urls, [:owner_id, :owner_type]
+    add_index :shortened_urls, [:related_id, :source_type]
+    # add_index :shortened_urls, :meta, using: :gist
   end
 end
