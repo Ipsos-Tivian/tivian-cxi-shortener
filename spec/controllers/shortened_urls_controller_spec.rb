@@ -133,6 +133,43 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           end
         end
       end
+
+      context "no value for callback 'hook_handler'" do
+        before do
+          Shortener.hook_handler = nil
+          # call again for the get is done with the setting
+          get :show, id: key
+        end
+
+        context 'regular redirection' do
+          let(:key) { short_url.unique_key }
+
+          it 'redirects to the destination url' do
+            expect(response).to redirect_to destination
+            expect(response.code).to eq '301'
+          end
+        end
+      end
+
+      context "with a value for callback 'hook_handler'" do
+        before do
+          Shortener.hook_handler = proc do |options|
+            "#{options[:short_url][:url]}?foo=26&noclash=56"
+          end
+          # call again for the get is done with the setting
+          get :show, id: key
+        end
+
+        context 'callback on redirection' do
+          let(:key) { short_url.unique_key }
+          let(:new_destination) { "#{destination}?foo=26&noclash=56" }
+
+          it 'redirects to a modified destination url' do
+            expect(response).to redirect_to new_destination
+            expect(response.code).to eq '301'
+          end
+        end
+      end
     end
   end
 end
