@@ -96,6 +96,20 @@ behavior with:
 
   Shortener.exclude_bots = true
 
+By default, the shortener is going to redirect to original url at the moment a shortened URL is accessed.
+You can include a callback and perform some business logic and/or also modify final url (e.g. add additional query params), by including the following:
+
+  # Include all business logic and final url before redirection
+  #
+  # options = { short_url: {url: <the original url>, shortened_url: <the retrieved ShortenedURL>}, request: <request> }
+  #
+  # Returns a url to perform the redirection
+  #
+  Shortener.hook_handler = proc do |options|
+    # biz(...)
+    options[:short_url][:url]
+  end
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
@@ -213,7 +227,7 @@ Bonus: add an index if you plan on querying this +:meta+ column
   end
 
 
-=== Shorten URLs with message_id, source and campaign_user_id parameters
+=== Shorten URLs with related_id and source_type parameters
 Additional columns were added to a shortened URL:
 
 +related_id+: includes object's id linking (an object with a url)

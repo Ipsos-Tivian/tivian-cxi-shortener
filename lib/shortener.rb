@@ -37,6 +37,10 @@ module Shortener
   mattr_accessor :enable_meta
   self.enable_meta = false
 
+  # Callback to be triggered
+  mattr_accessor :hook_handler
+  self.hook_handler = nil
+
   def self.key_chars
     CHARSETS[charset]
   end

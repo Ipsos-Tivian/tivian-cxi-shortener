@@ -10,6 +10,14 @@ class Shortener::ShortenedUrlsController < ActionController::Base
     url   = ::Shortener::ShortenedUrl.fetch_with_token(token: token,
                                                        additional_params: permitted_params,
                                                        track: track)
+
+    # Configuration callback before redirection
+    unless Shortener.hook_handler.nil?
+      options = { short_url: url, request: request }
+      new_url = Shortener.hook_handler.call(options)
+      redirect_to new_url, status: :moved_permanently and return
+    end
+
     redirect_to url[:url], status: :moved_permanently
   end
 
